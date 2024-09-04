@@ -1,10 +1,15 @@
 import express from 'express';
-import { addWarehouse, getAllWarehouses } from '../controllers/warehouses-controller.js';
+import { addWarehouse, getAllWarehouses, getMainWarehouse } from '../controllers/warehouses-controller.js';
 
 const router = express.Router();
 
 router
-    .post('/', addWarehouse)
-    .get('/', getAllWarehouses)
+    .route('/')
+    .post(addWarehouse)
+    .get(getAllWarehouses);
+
+router
+    .route("/:id")
+    .get(getMainWarehouse);
 
 export default router;
