@@ -6,7 +6,7 @@ const knex = initKnex(knexConfig);
 const addWarehouse = async (req, res) => {
 	const warehouse = req.body;
 	if (!!missedPropertiesWarehouse(warehouse)) {
-		res.status(400).send(`Missing required properties in your request body: ${missedWarehouseProperties(warehouse).join(', ')}`);
+		res.status(400).send(`Missing/empty required properties in your request body: ${missedPropertiesWarehouse(warehouse).join(', ')}`);
 	}
 	else if (!havingValidEmail(warehouse.contact_email)) {
 		res.status(400).send('Invalid email');

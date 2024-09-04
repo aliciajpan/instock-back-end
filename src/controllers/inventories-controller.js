@@ -39,7 +39,7 @@ const getAllInventories = async (req, res) => {
 const addInventory = async (req, res) => {
 	const inventory = req.body;
 	if (!!missedPropertiesInventory(inventory)) {
-		res.status(400).send(`Missing required properties in your request body: ${missedInventoryProperties(inventory).join(', ')}`);
+		res.status(400).send(`Missing/empty required properties in your request body: ${missedPropertiesInventory(inventory).join(', ')}`);
 	}
 
     else if (typeof(inventory.quantity) !== 'number' || !Number.isInteger(inventory.quantity)) {
