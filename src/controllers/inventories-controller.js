@@ -1,6 +1,6 @@
 import knexConfig from "../../knexfile.js";
 import initKnex from "knex";
-import { missedInventoryProperties } from '../utils/model-validation.js';
+import { missedPropertiesInventory } from '../utils/model-validation.js';
 
 const knex = initKnex(knexConfig);
 
@@ -38,7 +38,7 @@ const getAllInventories = async (req, res) => {
 
 const addInventory = async (req, res) => {
 	const inventory = req.body;
-	if (!!missedInventoryProperties(inventory)) {
+	if (!!missedPropertiesInventory(inventory)) {
 		res.status(400).send(`Missing required properties in your request body: ${missedInventoryProperties(inventory).join(', ')}`);
 	}
 
