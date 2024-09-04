@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import { getAllInventories } from '../controllers/inventories-controller.js';
+import { addInventory, getAllInventories } from '../controllers/inventories-controller.js';
 
 const router = Router();
 
 router
     .route('/')
-    .get(getAllInventories);
+    .get(getAllInventories)
+    .post(addInventory);
 
 export default router;

@@ -1,12 +1,12 @@
-import { missedProperties, havingValidEmail, havingValidPhone } from '../utils/model-validation.js';
+import { missedPropertiesWarehouse, havingValidEmail, havingValidPhone } from '../utils/model-validation.js';
 import knexConfig from '../../knexfile.js';
 import initKnex from 'knex';
 
 const knex = initKnex(knexConfig);
 const addWarehouse = async (req, res) => {
 	const warehouse = req.body;
-	if (!!missedProperties(warehouse)) {
-		res.status(400).send(`Missing required properties in your request body: ${missedProperties(warehouse).join(', ')}`);
+	if (!!missedPropertiesWarehouse(warehouse)) {
+		res.status(400).send(`Missing/empty required properties in your request body: ${missedPropertiesWarehouse(warehouse).join(', ')}`);
 	}
 	else if (!havingValidEmail(warehouse.contact_email)) {
 		res.status(400).send('Invalid email');
