@@ -1,7 +1,7 @@
-import express from 'express';
+import { Router } from 'express';
 import { addWarehouse, getAllWarehouses, getMainWarehouse } from '../controllers/warehouses-controller.js';
 
-const router = express.Router();
+const router = Router();
 
 router
     .route('/')
