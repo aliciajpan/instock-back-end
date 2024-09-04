@@ -38,6 +38,8 @@ const getAllInventories = async (req, res) => {
 
 const addInventory = async (req, res) => {
 	const inventory = req.body;
+    const existingWarehouses = await knex('warehouses').where({id: inventory.warehouse_id});
+
 	if (!!missedPropertiesInventory(inventory)) {
 		res.status(400).send(`Missing/empty required properties in your request body: ${missedPropertiesInventory(inventory).join(', ')}`);
 	}
@@ -49,6 +51,10 @@ const addInventory = async (req, res) => {
         res.status(400).send('Quantity must be a number');
     }
 
+    else if (existingWarehouses.length === 0) {
+        res.status(400).send('Warehouse ID does not exist');
+    }
+
 	else {
 		try {
 			const newInventoryId = await knex("inventories").insert(inventory);
@@ -57,10 +63,6 @@ const addInventory = async (req, res) => {
 		} 
         
         catch (error) {           
-            if (error.toString().includes("FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE)")) {
-                res.status(400).send('Warehouse ID does not exist');
-            }
-
             res.status(500).json({
                 message: "Unable to add new inventory",
                 error:error.toString()

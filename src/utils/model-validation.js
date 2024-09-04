@@ -3,7 +3,7 @@ export const missedProperties = (propertiesRequired, obj) => {
         !obj.hasOwnProperty(property)
         || obj[property] === null
         || obj[property] === undefined
-        || obj[property].trim() === ''
+        || obj[property] === ''
         );
 
     if (missingProperties.length > 0) {
