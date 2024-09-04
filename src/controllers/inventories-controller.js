@@ -1,5 +1,6 @@
 import knexConfig from "../../knexfile.js";
 import initKnex from "knex";
+import { missedInventoryProperties } from '../utils/model-validation.js';
 
 const knex = initKnex(knexConfig);
 
@@ -35,4 +36,37 @@ const getAllInventories = async (req, res) => {
     }
 };
 
-export { getAllInventories };
+const addInventory = async (req, res) => {
+	const inventory = req.body;
+	if (!!missedInventoryProperties(inventory)) {
+		res.status(400).send(`Missing required properties in your request body: ${missedInventoryProperties(inventory).join(', ')}`);
+	}
+
+    else if (typeof(inventory.quantity) !== 'number' || !Number.isInteger(inventory.quantity)) {
+        if (!Number.isInteger(inventory.quantity)) {
+            res.status(400).send('Quantity must be an integer');
+        }
+        res.status(400).send('Quantity must be a number');
+    }
+
+	else {
+		try {
+			const newInventoryId = await knex("inventories").insert(inventory);
+			const newInventory = {id: newInventoryId[0], ...inventory};
+			res.status(201).json(newInventory);
+		} 
+        
+        catch (error) {           
+            if (error.toString().includes("FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE)")) {
+                res.status(400).send('Warehouse ID does not exist');
+            }
+
+            res.status(500).json({
+                message: "Unable to add new inventory",
+                error:error.toString()
+            });
+		}
+	}
+};
+
+export { getAllInventories, addInventory };
