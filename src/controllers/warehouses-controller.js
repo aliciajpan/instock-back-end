@@ -1,7 +1,6 @@
 import { missedProperties, havingValidEmail, havingValidPhone } from '../utils/model-validation.js';
 import knexConfig from '../../knexfile.js';
 import initKnex from 'knex';
-import e from 'express';
 
 const knex = initKnex(knexConfig);
 const addWarehouse = async (req, res) => {
