@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { addWarehouse, getAllWarehouses, getMainWarehouse } from '../controllers/warehouses-controller.js';
+import { addWarehouse, getAllWarehouses, getMainWarehouse, getInventories } from '../controllers/warehouses-controller.js';
 
 const router = Router();
 
@@ -11,5 +11,9 @@ router
 router
     .route("/:id")
     .get(getMainWarehouse);
+
+router
+.route("/:id/inventories")
+.get(getInventories);
 
 export default router;
