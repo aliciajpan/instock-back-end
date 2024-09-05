@@ -102,7 +102,7 @@ async function getInventories(req, res){
 
     catch (error) {
         res.status(500).json({
-            message: `Unable to retrieve warehouse data for ID ${req.params.id}`,
+            message: `Unable to retrieve inventory data for warehouse data for ID ${req.params.id}`,
             error:error.toString()
         });
     }
