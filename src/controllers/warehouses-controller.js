@@ -4,25 +4,29 @@ import initKnex from 'knex';
 
 const knex = initKnex(knexConfig);
 const addWarehouse = async (req, res) => {
-	const warehouse = req.body;
-	if (!!missedPropertiesWarehouse(warehouse)) {
-		res.status(400).send(`Missing/empty required properties in your request body: ${missedPropertiesWarehouse(warehouse).join(', ')}`);
-	}
-	else if (!havingValidEmail(warehouse.contact_email)) {
-		res.status(400).send('Invalid email');
-	}
-	else if (!havingValidPhone(warehouse.contact_phone)) {
-		res.status(400).send('Invalid phone number');
-	}
-	else {
-		try {
-			const newWarehouseIds = await knex('warehouses').insert(warehouse);
-			const newWarehouse = {id: newWarehouseIds[0], ...warehouse};
-			res.status(201).json(newWarehouse);
-		} catch (error) {
-			res.status(500).json({ error: error.message });
-		}
-	}
+    try {
+        const warehouse = req.body;
+        if (!!missedPropertiesWarehouse(warehouse)) {
+            res.status(400).send(
+                `Missing/empty required properties in your request body: ${missedPropertiesWarehouse(
+                    warehouse
+                ).join(", ")}`
+            );
+        } else if (!havingValidEmail(warehouse.contact_email)) {
+            res.status(400).send("Invalid email");
+        } else if (!havingValidPhone(warehouse.contact_phone)) {
+            res.status(400).send("Invalid phone number");
+        } else {
+            const newWarehouseIds = await knex("warehouses").insert(warehouse);
+            const newWarehouse = { id: newWarehouseIds[0], ...warehouse };
+            res.status(201).json(newWarehouse);
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Unable to add new warehouse",
+            error: error.message,
+        });
+    }
 };
 
 const getAllWarehouses = async (_req, res) => {
@@ -47,7 +51,7 @@ const getAllWarehouses = async (_req, res) => {
     catch (error) {
         res.status(500).json({
             message: "Unable to retrieve warehouses data",
-            error:error.toString()
+            error: error.message
         });
     }
 };
@@ -80,14 +84,14 @@ const getMainWarehouse = async (req, res) => {
     catch (error) {
         res.status(500).json({
             message: `Unable to retrieve warehouse data for ID ${req.params.id}`,
-            error:error.toString()
+            error: error.message
         });
     }
 };
 
 async function getInventories(req, res){
-    const id=req.params.id
     try {
+        const id= req.params.id;
         const warehouse = await knex('warehouses')
             .where({id}).first();
 
@@ -103,7 +107,7 @@ async function getInventories(req, res){
     catch (error) {
         res.status(500).json({
             message: `Unable to retrieve inventory data for warehouse data for ID ${req.params.id}`,
-            error:error.toString()
+            error: error.message
         });
     }
 }
