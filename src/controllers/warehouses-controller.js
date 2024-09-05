@@ -85,4 +85,27 @@ const getMainWarehouse = async (req, res) => {
     }
 };
 
-export { addWarehouse, getAllWarehouses, getMainWarehouse };
+async function getInventories(req, res){
+    const id=req.params.id
+    try {
+        const warehouse = await knex('warehouses')
+            .where({id}).first();
+
+        if (!warehouse) {
+            return res.status(404).json({
+                message: `Warehouse with ID ${id} not found` 
+            });
+        }
+        const inventories = await knex.select("id", "item_name", "category", "status", "quantity").from('inventories').where({warehouse_id:id})
+        res.status(200).json(inventories);
+    } 
+
+    catch (error) {
+        res.status(500).json({
+            message: `Unable to retrieve inventory data for warehouse data for ID ${req.params.id}`,
+            error:error.toString()
+        });
+    }
+}
+
+export { addWarehouse, getAllWarehouses, getMainWarehouse, getInventories };
