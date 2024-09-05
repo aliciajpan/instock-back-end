@@ -71,4 +71,25 @@ const addInventory = async (req, res) => {
 	}
 };
 
-export { getAllInventories, addInventory };
+const deleteInventoryItem = async (req, res) => {
+    try {
+        const deleted = await knex("inventories")
+            .where({ id: req.params.id })
+            .delete();
+
+        if (deleted === 0) {
+            return res.status(404).send(`Inventory item with ID ${req.params.id} not found`);
+        }
+
+        res.sendStatus(204);
+    } 
+    
+    catch (error) {
+        res.status(500).json({
+            message: "Unable to delete inventory item",
+            error:error.toString()
+        });
+    }
+};
+
+export { getAllInventories, addInventory, deleteInventoryItem };
