@@ -95,6 +95,30 @@ const deleteInventoryItem = async (req, res) => {
         });
     }
 };
+const getInventory = async (req, res) => {
+    try {
+        const inventory = await knex.select('id', 'warehouse_id', 'item_name', 'description', 'category', 'status', 'quantity').from('inventories').where({ id: req.params.id }).first();
+
+        if (!inventory) {
+            res.status(404).json({
+                message: `Inventory with ID ${req.params.id} not found` 
+            });
+            return;
+        }
+        const warehouse = await knex.select('warehouse_name').from('warehouses').where({ id: inventory.warehouse_id }).first();
+        inventory.warehouse_name = warehouse.warehouse_name
+        delete inventory.warehouse_id;
+        res.status(200).json(inventory);
+    } 
+
+    catch (error) {
+        res.status(500).json({
+            message: `Unable to retrieve inventory data for ID ${req.params.id}`,
+            error: error.message
+        });
+    }
+};
+
 
 const updateInventoryItem = async (req, res) => {
     try {
@@ -140,4 +164,4 @@ const updateInventoryItem = async (req, res) => {
     }
 };
 
-export { getAllInventories, addInventory, deleteInventoryItem, updateInventoryItem };
+export { getAllInventories, addInventory, deleteInventoryItem, updateInventoryItem, getInventory };
