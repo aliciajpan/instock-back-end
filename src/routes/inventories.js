@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { addInventory, getAllInventories, deleteInventoryItem, updateInventoryItem } from '../controllers/inventories-controller.js';
+import { getInventory, addInventory, getAllInventories, deleteInventoryItem, updateInventoryItem } from '../controllers/inventories-controller.js';
 
 const router = Router();
 
@@ -11,6 +11,8 @@ router
 router
     .route("/:id")
     .delete(deleteInventoryItem)
-    .put(updateInventoryItem);
+    .put(updateInventoryItem)
+    .get(getInventory);
+    
 
 export default router;
