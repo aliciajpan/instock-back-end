@@ -43,15 +43,19 @@ const addInventory = async (req, res) => {
         const existingWarehouses = await knex('warehouses').where({id: inventory.warehouse_id});
         if (!!missedPropertiesInventory(inventory)) {
             res.status(400).send(`Missing/empty required properties in your request body: ${missedPropertiesInventory(inventory).join(', ')}`);
+            return;
         }
         else if (typeof(inventory.quantity) !== 'number' || !Number.isInteger(inventory.quantity)) {
             if (!Number.isInteger(inventory.quantity)) {
                 res.status(400).send('Quantity must be an integer');
+                return;
             }
             res.status(400).send('Quantity must be a number');
+            return;
         }
         else if (existingWarehouses.length === 0) {
             res.status(400).send('Warehouse ID does not exist');
+            return;
         }
         else {
             const newInventoryId = await knex("inventories").insert(inventory);
@@ -74,7 +78,8 @@ const deleteInventoryItem = async (req, res) => {
             .delete();
 
         if (deleted === 0) {
-            return res.status(404).send(`Inventory item with ID ${req.params.id} not found`);
+            res.status(404).send(`Inventory item with ID ${req.params.id} not found`);
+            return;
         }
 
         res.sendStatus(204);
@@ -95,11 +100,13 @@ const updateInventoryItem = async (req, res) => {
 
         if (!!missedPropertiesInventory(inventoryItemToUpdate)) {
             res.status(400).send(`Missing/empty required properties in your request body: ${missedPropertiesInventory(inventoryItemToUpdate).join(', ')}`);
+            return;
         }
 
         if (typeof(inventoryItemToUpdate.quantity) !== 'number' || !Number.isInteger(inventoryItemToUpdate.quantity)) {
             if (!Number.isInteger(inventoryItemToUpdate.quantity)) {
                 res.status(400).send('Quantity must be an integer');
+                return;
             }
             res.status(400).send('Quantity must be a number');
             return;

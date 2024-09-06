@@ -12,10 +12,13 @@ const addWarehouse = async (req, res) => {
                     warehouse
                 ).join(", ")}`
             );
+            return;
         } else if (!havingValidEmail(warehouse.contact_email)) {
             res.status(400).send("Invalid email");
+            return;
         } else if (!havingValidPhone(warehouse.contact_phone)) {
             res.status(400).send("Invalid phone number");
+            return;
         } else {
             const newWarehouseIds = await knex("warehouses").insert(warehouse);
             const newWarehouse = { id: newWarehouseIds[0], ...warehouse };
@@ -62,9 +65,10 @@ const getMainWarehouse = async (req, res) => {
             .where({ id: req.params.id });
 
         if (warehousesFound.length === 0) {
-            return res.status(404).json({
+            res.status(404).json({
                 message: `Warehouse with ID ${req.params.id} not found` 
             });
+            return;
         }
 
         const mainWarehouse = {
@@ -96,9 +100,10 @@ async function getInventories(req, res){
             .where({id}).first();
 
         if (!warehouse) {
-            return res.status(404).json({
+            res.status(404).json({
                 message: `Warehouse with ID ${id} not found` 
             });
+            return;
         }
         const inventories = await knex.select("id", "item_name", "category", "status", "quantity").from('inventories').where({warehouse_id:id})
         res.status(200).json(inventories);
