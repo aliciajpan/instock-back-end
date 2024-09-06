@@ -8,7 +8,8 @@ const getAllInventories = async (req, res) => {
     try {
         const inventories = await knex("inventories")
             .join("warehouses", "inventories.warehouse_id", "warehouses.id")
-            .select("inventories.*", "warehouses.warehouse_name");
+            .select("inventories.*", "warehouses.warehouse_name")
+            .orderBy("created_at", "desc");
         const inventoriesToReturn = inventories.map(
             ({
                 id,
@@ -87,4 +88,46 @@ const deleteInventoryItem = async (req, res) => {
     }
 };
 
-export { getAllInventories, addInventory, deleteInventoryItem };
+const updateInventoryItem = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { id: _id, ...inventoryItemToUpdate} = req.body;
+
+        if (!!missedPropertiesInventory(inventoryItemToUpdate)) {
+            res.status(400).send(`Missing/empty required properties in your request body: ${missedPropertiesInventory(inventoryItemToUpdate).join(', ')}`);
+        }
+
+        if (typeof(inventoryItemToUpdate.quantity) !== 'number' || !Number.isInteger(inventoryItemToUpdate.quantity)) {
+            if (!Number.isInteger(inventoryItemToUpdate.quantity)) {
+                res.status(400).send('Quantity must be an integer');
+            }
+            res.status(400).send('Quantity must be a number');
+            return;
+        }
+
+        const existingWarehouses = await knex('warehouses').where({id: inventoryItemToUpdate.warehouse_id});
+        if (existingWarehouses.length === 0) {
+            res.status(400).send(`Warehouse ID ${inventoryItemToUpdate.warehouse_id} does not exist`);
+            return;
+        }
+
+        const updated = await knex("inventories")
+            .where({ id })
+            .update(inventoryItemToUpdate);
+
+        if (updated === 0) {
+            res.status(404).send(`Inventory item with ID ${id} not found`);
+            return;
+        }
+
+        res.status(200).json({id, ...inventoryItemToUpdate});
+    }
+    catch (error) {
+        res.status(500).json({
+            message: "Unable to update inventory item",
+            error: error.message
+        });
+    }
+};
+
+export { getAllInventories, addInventory, deleteInventoryItem, updateInventoryItem };
