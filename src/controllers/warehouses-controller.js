@@ -61,28 +61,17 @@ const getAllWarehouses = async (_req, res) => {
 
 const getMainWarehouse = async (req, res) => {
     try {
-        const warehousesFound = await knex('warehouses')
-            .where({ id: req.params.id });
+        const warehouse = await knex.select('id', 'warehouse_name', 'address', 'city', 'country', 'contact_name', 'contact_position', 'contact_phone', 'contact_email' ).from('warehouses').where({ id: req.params.id }).first();
 
-        if (warehousesFound.length === 0) {
+        if (!warehouse) {
             res.status(404).json({
                 message: `Warehouse with ID ${req.params.id} not found` 
             });
             return;
         }
 
-        const mainWarehouse = {
-                id: warehousesFound[0].id,
-                warehouse_name: warehousesFound[0].warehouse_name,
-                address: warehousesFound[0].address,
-                city: warehousesFound[0].city,
-                country: warehousesFound[0].country,
-                contact_name: warehousesFound[0].contact_name,
-                contact_position: warehousesFound[0].contact_position,
-                contact_phone: warehousesFound[0].contact_phone,
-                contact_email: warehousesFound[0].contact_email,
-        };
-        res.status(200).json(mainWarehouse);
+
+        res.status(200).json();
     } 
 
     catch (error) {
