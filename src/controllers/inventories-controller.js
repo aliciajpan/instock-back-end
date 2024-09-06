@@ -32,7 +32,10 @@ const getAllInventories = async (req, res) => {
         );
         res.status(200).json(inventoriesToReturn);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({
+            message: "Unable to get all inventory items data",
+            error:error.toString()
+        });
     }
 };
 

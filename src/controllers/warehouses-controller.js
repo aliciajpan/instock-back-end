@@ -20,7 +20,10 @@ const addWarehouse = async (req, res) => {
 			const newWarehouse = {id: newWarehouseIds[0], ...warehouse};
 			res.status(201).json(newWarehouse);
 		} catch (error) {
-			res.status(500).json({ error: error.message });
+            res.status(500).json({
+                message: "Unable to add warehouse",
+                error:error.toString()
+            });
 		}
 	}
 };
@@ -108,4 +111,25 @@ async function getInventories(req, res){
     }
 }
 
-export { addWarehouse, getAllWarehouses, getMainWarehouse, getInventories };
+const deleteWarehouse = async (req, res) => {
+    try {
+        const deleted = await knex("warehouses")
+            .where({ id: req.params.id })
+            .delete();
+
+        if (deleted === 0) {
+            return res.status(404).send(`Warehouse with ID ${req.params.id} not found`);
+        }
+
+        res.sendStatus(204);
+    } 
+
+    catch (error) {
+        res.status(500).json({
+            message: "Unable to delete warehouse",
+            error:error.toString()
+        });
+    }
+};
+
+export { addWarehouse, getAllWarehouses, getMainWarehouse, getInventories, deleteWarehouse };
