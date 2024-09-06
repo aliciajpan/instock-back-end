@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { addWarehouse, getAllWarehouses, getMainWarehouse, getInventories } from '../controllers/warehouses-controller.js';
+import { addWarehouse, getAllWarehouses, getMainWarehouse, getInventories, deleteWarehouse } from '../controllers/warehouses-controller.js';
 
 const router = Router();
 
