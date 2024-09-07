@@ -34,21 +34,11 @@ const addWarehouse = async (req, res) => {
 
 const getAllWarehouses = async (_req, res) => {
     try {
-        const warehouseData = await knex('warehouses');
-        const warehouseDataAbridged = warehouseData.map((warehouse) => {
-            return {
-                id: warehouse.id,
-                warehouse_name: warehouse.warehouse_name,
-                address: warehouse.address,
-                city: warehouse.city,
-                country: warehouse.country,
-                contact_name: warehouse.contact_name,
-                contact_position: warehouse.contact_position,
-                contact_phone: warehouse.contact_phone,
-                contact_email: warehouse.contact_email,
-            }
-        });
-        res.status(200).json(warehouseDataAbridged);
+        const warehouseData = await knex
+            .select('id', 'warehouse_name', 'address', 'city', 'country', 'contact_name', 'contact_position', 'contact_phone', 'contact_email')
+            .from('warehouses');
+
+        res.status(200).json(warehouseData);
     } 
 
     catch (error) {
@@ -62,7 +52,7 @@ const getAllWarehouses = async (_req, res) => {
 const getMainWarehouse = async (req, res) => {
     try {
         const warehouse = await knex
-            .select('id', 'warehouse_name', 'address', 'city', 'country', 'contact_name', 'contact_position', 'contact_phone', 'contact_email' )
+            .select('id', 'warehouse_name', 'address', 'city', 'country', 'contact_name', 'contact_position', 'contact_phone', 'contact_email')
             .from('warehouses')
             .where({ id: req.params.id })
             .first();
