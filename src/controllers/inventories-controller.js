@@ -154,7 +154,7 @@ const updateInventoryItem = async (req, res) => {
             return;
         }
 
-        res.status(201).json({id, ...inventoryItemToUpdate});
+        res.status(200).json({id, ...inventoryItemToUpdate});
     }
     catch (error) {
         res.status(500).json({

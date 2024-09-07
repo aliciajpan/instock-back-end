@@ -147,7 +147,7 @@ const updateWarehouse = async (req, res) => {
 
     const updated = await knex('warehouses').where({ id }).update(warehouseItemToUpdate);
 
-    res.status(201).json({id, ...warehouseItemToUpdate});
+    res.status(200).json({id, ...warehouseItemToUpdate});
     
   } catch (error) {
     res.status(500).json({
