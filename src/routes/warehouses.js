@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { addWarehouse, getAllWarehouses, getMainWarehouse, getInventories, deleteWarehouse } from '../controllers/warehouses-controller.js';
+import { addWarehouse, getAllWarehouses, getMainWarehouse, getInventories, deleteWarehouse, updateWarehouse } from '../controllers/warehouses-controller.js';
 
 const router = Router();
 
@@ -11,7 +11,8 @@ router
 router
     .route("/:id")
     .get(getMainWarehouse)
-    .delete(deleteWarehouse);
+    .delete(deleteWarehouse)
+    .put(updateWarehouse);
 
 router
     .route("/:id/inventories")

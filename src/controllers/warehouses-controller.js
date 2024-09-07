@@ -132,4 +132,39 @@ const deleteWarehouse = async (req, res) => {
     }
 };
 
-export { addWarehouse, getAllWarehouses, getMainWarehouse, getInventories, deleteWarehouse };
+const updateWarehouse = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+    const { id: _id, ...warehouseItemToUpdate } = req.body;
+    if (!!missedPropertiesWarehouse(warehouseItemToUpdate)) {
+      res
+        .status(400)
+        .send(
+          `Missing/empty required properties in your request body: ${missedPropertiesWarehouse(
+            warehouseItemToUpdate
+          ).join(', ')}`
+        );
+      return;
+
+    }
+
+    const warehouseItem = await knex('warehouses').where({ id }).first()
+    if (!warehouseItem) {
+        res.status(400).send(`Warehouse ID ${id} does not exist`);
+        return;
+    }
+
+    const updated = await knex('warehouses').where({ id }).update(warehouseItemToUpdate);
+
+    res.status(201).json(warehouseItemToUpdate);
+    
+  } catch (error) {
+    res.status(500).json({
+      message: 'Unable to update warehouse',
+      error: error.message,
+    });
+  }
+};
+
+export { addWarehouse, getAllWarehouses, getMainWarehouse, getInventories, deleteWarehouse, updateWarehouse };
