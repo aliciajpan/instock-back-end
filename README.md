@@ -243,6 +243,7 @@ Example response body:
     }
 ]
 ```
+Note that newly added inventory items will be shown at the top for ease of users seeing their newly created items first.
 
 ### GET /api/inventories/:id
 - Returns information for a specific inventory item
