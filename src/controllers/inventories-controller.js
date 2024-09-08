@@ -7,10 +7,17 @@ const knex = initKnex(knexConfig);
 const getAllInventories = async (req, res) => {
     try {
         const searchTerm = req.query.s && req.query.s.trim().toLowerCase();
+        const sortKey = req.query.sort_by ? `${req.query.sort_by}` : "inventories.created_at";
+        let sortOrderBy = req.query.order_by ? `${req.query.order_by}` : "asc";
+
+        if (!req.query.sort_by) {
+            sortOrderBy = "desc";
+        }
+
         const inventories = await knex("inventories")
             .join("warehouses", "inventories.warehouse_id", "warehouses.id")
             .select("inventories.id", "warehouses.warehouse_name", "inventories.item_name", "inventories.description", "inventories.category", "inventories.status", "inventories.quantity")
-            .orderBy("inventories.created_at", "desc");
+            .orderBy(sortKey, sortOrderBy);
 
         const filteredInventories = searchTerm ? 
             inventories.filter((inventory) => {
