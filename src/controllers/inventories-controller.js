@@ -6,33 +6,27 @@ const knex = initKnex(knexConfig);
 
 const getAllInventories = async (req, res) => {
     try {
+        const searchTerm = req.query.s && req.query.s.trim().toLowerCase();
         const inventories = await knex("inventories")
             .join("warehouses", "inventories.warehouse_id", "warehouses.id")
-            .select("inventories.*", "warehouses.warehouse_name")
-            .orderBy("created_at", "desc");
-        const inventoriesToReturn = inventories.map(
-            ({
-                id,
-                warehouse_name,
-                item_name,
-                description,
-                category,
-                status,
-                quantity,
-            }) => {
-                return {
-                    id,
-                    warehouse_name,
-                    item_name,
-                    description,
-                    category,
-                    status,
-                    quantity,
-                };
-            }
-        );
-        res.status(200).json(inventoriesToReturn);
-    } catch (error) {
+            .select("inventories.id", "warehouses.warehouse_name", "inventories.item_name", "inventories.description", "inventories.category", "inventories.status", "inventories.quantity")
+            .orderBy("inventories.created_at", "desc");
+
+        const filteredInventories = searchTerm ? 
+            inventories.filter((inventory) => {
+                return (
+                    inventory.item_name.toLowerCase().includes(searchTerm) ||
+                    inventory.warehouse_name.toLowerCase().includes(searchTerm) ||
+                    inventory.description.toLowerCase().includes(searchTerm) ||
+                    inventory.category.toLowerCase().includes(searchTerm)
+                )
+        })
+        : inventories;
+
+        res.status(200).json(filteredInventories);
+    } 
+    
+    catch (error) {
         res.status(500).json({
             message: "Unable to get all inventory items data",
             error:error.toString()
@@ -97,7 +91,11 @@ const deleteInventoryItem = async (req, res) => {
 };
 const getInventory = async (req, res) => {
     try {
-        const inventory = await knex.select('id', 'warehouse_id', 'item_name', 'description', 'category', 'status', 'quantity').from('inventories').where({ id: req.params.id }).first();
+        const inventory = await knex
+            .select('id', 'warehouse_id', 'item_name', 'description', 'category', 'status', 'quantity')
+            .from('inventories')
+            .where({ id: req.params.id })
+            .first();
 
         if (!inventory) {
             res.status(404).json({
@@ -106,7 +104,7 @@ const getInventory = async (req, res) => {
             return;
         }
         const warehouse = await knex.select('warehouse_name').from('warehouses').where({ id: inventory.warehouse_id }).first();
-        inventory.warehouse_name = warehouse.warehouse_name
+        inventory.warehouse_name = warehouse.warehouse_name;
         delete inventory.warehouse_id;
         res.status(200).json(inventory);
     } 

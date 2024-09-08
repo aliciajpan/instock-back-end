@@ -32,13 +32,29 @@ const addWarehouse = async (req, res) => {
     }
 };
 
-const getAllWarehouses = async (_req, res) => {
+const getAllWarehouses = async (req, res) => {
     try {
+        const searchTerm = req.query.s && req.query.s.trim().toLowerCase();
         const warehouseData = await knex
             .select('id', 'warehouse_name', 'address', 'city', 'country', 'contact_name', 'contact_position', 'contact_phone', 'contact_email')
             .from('warehouses');
 
-        res.status(200).json(warehouseData);
+        const filteredWarehouses = searchTerm ? 
+        warehouseData.filter((inventory) => {
+                return (
+                    inventory.warehouse_name.toLowerCase().includes(searchTerm) ||
+                    inventory.address.toLowerCase().includes(searchTerm) ||
+                    inventory.city.toLowerCase().includes(searchTerm) ||
+                    inventory.country.toLowerCase().includes(searchTerm) ||
+                    inventory.contact_name.toLowerCase().includes(searchTerm) ||
+                    inventory.contact_position.toLowerCase().includes(searchTerm) ||
+                    inventory.contact_phone.toLowerCase().includes(searchTerm) ||
+                    inventory.contact_email.toLowerCase().includes(searchTerm)
+                )
+        })
+        : warehouseData;
+
+        res.status(200).json(filteredWarehouses);
     } 
 
     catch (error) {
@@ -88,7 +104,10 @@ async function getInventories(req, res){
             });
             return;
         }
-        const inventories = await knex.select("id", "item_name", "category", "status", "quantity").from('inventories').where({warehouse_id:id})
+        const inventories = await knex
+            .select("id", "item_name", "category", "status", "quantity")
+            .from('inventories')
+            .where({warehouse_id:id})
         res.status(200).json(inventories);
     } 
 
