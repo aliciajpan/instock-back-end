@@ -35,9 +35,17 @@ const addWarehouse = async (req, res) => {
 const getAllWarehouses = async (req, res) => {
     try {
         const searchTerm = req.query.s && req.query.s.trim().toLowerCase();
+        const sortKey = req.query.sort_by ? `${req.query.sort_by}` : "created_at";
+        let sortOrderBy = req.query.order_by ? `${req.query.order_by}` : "asc";
+        
+        if (!req.query.sort_by) {
+            sortOrderBy = "desc";
+        }
+
         const warehouseData = await knex
             .select('id', 'warehouse_name', 'address', 'city', 'country', 'contact_name', 'contact_position', 'contact_phone', 'contact_email')
-            .from('warehouses');
+            .from('warehouses')
+            .orderBy(sortKey, sortOrderBy);
 
         const filteredWarehouses = searchTerm ? 
         warehouseData.filter((inventory) => {
