@@ -49,6 +49,7 @@ const addInventory = async (req, res) => {
             res.status(400).send(`Missing/empty required properties in your request body: ${missedPropertiesInventory(inventory).join(', ')}`);
             return;
         }
+
         else if (typeof(inventory.quantity) !== 'number' || !Number.isInteger(inventory.quantity)) {
             if (!Number.isInteger(inventory.quantity)) {
                 res.status(400).send('Quantity must be an integer');
@@ -57,10 +58,12 @@ const addInventory = async (req, res) => {
             res.status(400).send('Quantity must be a number');
             return;
         }
+
         else if (existingWarehouses.length === 0) {
             res.status(400).send('Warehouse ID does not exist');
             return;
         }
+
         else {
             const newInventoryId = await knex("inventories").insert(inventory);
             const newInventory = {id: newInventoryId[0], ...inventory};
@@ -96,6 +99,7 @@ const deleteInventoryItem = async (req, res) => {
         });
     }
 };
+
 const getInventory = async (req, res) => {
     try {
         const inventory = await knex

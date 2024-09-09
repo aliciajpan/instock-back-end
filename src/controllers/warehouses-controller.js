@@ -3,34 +3,6 @@ import knexConfig from '../../knexfile.js';
 import initKnex from 'knex';
 
 const knex = initKnex(knexConfig);
-const addWarehouse = async (req, res) => {
-    try {
-        const warehouse = req.body;
-        if (!!missedPropertiesWarehouse(warehouse)) {
-            res.status(400).send(
-                `Missing/empty required properties in your request body: ${missedPropertiesWarehouse(
-                    warehouse
-                ).join(", ")}`
-            );
-            return;
-        } else if (!havingValidEmail(warehouse.contact_email)) {
-            res.status(400).send("Invalid email");
-            return;
-        } else if (!havingValidPhone(warehouse.contact_phone)) {
-            res.status(400).send("Invalid phone number");
-            return;
-        } else {
-            const newWarehouseIds = await knex("warehouses").insert(warehouse);
-            const newWarehouse = { id: newWarehouseIds[0], ...warehouse };
-            res.status(201).json(newWarehouse);
-        }
-    } catch (error) {
-        res.status(500).json({
-            message: "Unable to add new warehouse",
-            error: error.message,
-        });
-    }
-};
 
 const getAllWarehouses = async (req, res) => {
     try {
@@ -100,6 +72,43 @@ const getMainWarehouse = async (req, res) => {
     }
 };
 
+const addWarehouse = async (req, res) => {
+    try {
+        const warehouse = req.body;
+        if (!!missedPropertiesWarehouse(warehouse)) {
+            res.status(400).send(
+                `Missing/empty required properties in your request body: ${missedPropertiesWarehouse(
+                    warehouse
+                ).join(", ")}`
+            );
+            return;
+        } 
+        
+        else if (!havingValidEmail(warehouse.contact_email)) {
+            res.status(400).send("Invalid email");
+            return;
+        } 
+        
+        else if (!havingValidPhone(warehouse.contact_phone)) {
+            res.status(400).send("Invalid phone number");
+            return;
+        } 
+        
+        else {
+            const newWarehouseIds = await knex("warehouses").insert(warehouse);
+            const newWarehouse = { id: newWarehouseIds[0], ...warehouse };
+            res.status(201).json(newWarehouse);
+        }
+    } 
+    
+    catch (error) {
+        res.status(500).json({
+            message: "Unable to add new warehouse",
+            error: error.message,
+        });
+    }
+};
+
 async function getInventories(req, res){
     try {
         const id= req.params.id;
@@ -150,38 +159,38 @@ const deleteWarehouse = async (req, res) => {
 };
 
 const updateWarehouse = async (req, res) => {
-  try {
+    try {
+        const { id } = req.params;
+        const { id: _id, ...warehouseItemToUpdate } = req.body;
+        if (!!missedPropertiesWarehouse(warehouseItemToUpdate)) {
+            res
+                .status(400)
+                .send(
+                `Missing/empty required properties in your request body: ${missedPropertiesWarehouse(
+                    warehouseItemToUpdate
+                ).join(', ')}`
+                );
+            return;
+        }
 
-    const { id } = req.params;
-    const { id: _id, ...warehouseItemToUpdate } = req.body;
-    if (!!missedPropertiesWarehouse(warehouseItemToUpdate)) {
-      res
-        .status(400)
-        .send(
-          `Missing/empty required properties in your request body: ${missedPropertiesWarehouse(
-            warehouseItemToUpdate
-          ).join(', ')}`
-        );
-      return;
+        const warehouseItem = await knex('warehouses').where({ id }).first()
+        if (!warehouseItem) {
+            res.status(400).send(`Warehouse ID ${id} does not exist`);
+            return;
+        }
 
-    }
+        const updated = await knex('warehouses').where({ id }).update(warehouseItemToUpdate);
 
-    const warehouseItem = await knex('warehouses').where({ id }).first()
-    if (!warehouseItem) {
-        res.status(400).send(`Warehouse ID ${id} does not exist`);
-        return;
-    }
-
-    const updated = await knex('warehouses').where({ id }).update(warehouseItemToUpdate);
-
-    res.status(200).json({id, ...warehouseItemToUpdate});
+        res.status(200).json({id, ...warehouseItemToUpdate});
     
-  } catch (error) {
-    res.status(500).json({
-      message: 'Unable to update warehouse',
-      error: error.message,
-    });
-  }
+    } 
+
+    catch (error) {
+        res.status(500).json({
+            message: 'Unable to update warehouse',
+            error: error.message,
+        });
+    }
 };
 
 export { addWarehouse, getAllWarehouses, getMainWarehouse, getInventories, deleteWarehouse, updateWarehouse };
