@@ -7,7 +7,9 @@ Base URL when run locally: http://localhost:8080
 
 ## Errors
 The API may return a 400 error if the request is bad or a 500 error in the case that the server fails.
+
 Trying to do operations on a warehouse or inventory item ID that does not exist will yield a 404 error.
+
 Errors descriptions will be returned.
 
 Example:
@@ -190,7 +192,9 @@ Example response body:
 }
 ```
 Empty string, missing properties, and properties set to NULL are all invalid.
+
 The `warehouse_id` must belong to an existing warehouse.
+
 Quantity must be a positive number. Quantity -> 0 means Status -> Out of Stock.
 
 ### PUT /api/inventories/:id
