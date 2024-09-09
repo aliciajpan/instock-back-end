@@ -113,6 +113,9 @@ Example response body:
     }
 ]
 ```
+**Additional functionality:** Can add search query parameters (`/api/warehouses?s={searchTerm}`)
+**Additional functionality:** Can add sort query parameters (`/api/warehouses?sort_by={sortKey}&order_by={sortOrderBy}`) where`order_by` is optional
+Search and sort can be used in combination.
 
 ### GET /api/warehouses/:id
 - Returns information for a specific warehouse
@@ -244,6 +247,9 @@ Example response body:
 ]
 ```
 Note that newly added inventory items will be shown at the top for ease of users seeing their newly created items first.
+**Additional functionality:** Can add search query parameters (`/api/inventories?s={searchTerm}`)
+**Additional functionality:** Can add sort query parameters (`/api/inventories?sort_by={sortKey}&order_by={sortOrderBy}`) where`order_by` is optional
+Search and sort can be used in combination.
 
 ### GET /api/inventories/:id
 - Returns information for a specific inventory item
